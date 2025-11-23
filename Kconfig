@@ -1,0 +1,3 @@
+mainmenu "UWB TAG FIRMWARE Configuration"
+
+source "Kconfig.zephyr"

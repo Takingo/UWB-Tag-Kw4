@@ -1,0 +1,105 @@
+╔═══════════════════════════════════════════════════════════════╗
+║     UWB Tag Firmware - Flashing Guide                          ║
+║     Device: nRF52833 Dongle                                    ║
+╚═══════════════════════════════════════════════════════════════╝
+
+✓ BUILD COMPLETE!
+  Firmware: build/merged.hex
+  Size: 25020 bytes (4.77% of 512KB Flash)
+  RAM: 6592 bytes (5.03% of 128KB)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FLASHING OPTIONS:
+
+1️⃣  RECOMMENDED: nRF Connect for Desktop (No Tools Needed)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Download: https://www.nordicsemi.com/Products/Development-tools/nRF-Connect-for-desktop
+   
+   Steps:
+   ✓ Install nRF Connect for Desktop
+   ✓ Launch the app and install "Programmer" app
+   ✓ Open Programmer tab
+   ✓ Select your nRF52833 Dongle from the device list
+   ✓ Click "Add file" → select "build/merged.hex"
+   ✓ Click "Program" button
+   ✓ Done! Watch the progress bar
+
+2️⃣  FAST: Install nRF Command-Line Tools (Uses nrfjprog)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Download: https://www.nordicsemi.com/Products/Development-tools/nRF-Command-Line-Tools
+   
+   After installation, run:
+   ┌─────────────────────────────────────────────────┐
+   │ python -m west flash -d build                   │
+   └─────────────────────────────────────────────────┘
+
+3️⃣  ALTERNATIVE: Using J-Link Debugger
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Install: https://www.segger.com/downloads/jlink
+   
+   Then run:
+   ┌─────────────────────────────────────────────────┐
+   │ python -m west flash -r jlink -d build          │
+   └─────────────────────────────────────────────────┘
+
+4️⃣  ALTERNATIVE: Using Python pyocd
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Install: pip install pyocd
+   
+   Then run:
+   ┌─────────────────────────────────────────────────┐
+   │ python -m west flash -r pyocd -d build          │
+   └─────────────────────────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠ IMPORTANT: USB Connection
+  • Ensure nRF52833 Dongle is connected via USB
+  • Windows: Check Device Manager for "nRF52833..." device
+  • Linux/Mac: Check dmesg or 'ls /dev/ttyACM*'
+  • Try different USB ports if device not detected
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SERIAL CONSOLE (After Flashing):
+  Connect at 115200 baud:
+  Windows:  Find port in Device Manager (likely COM3, COM4, etc.)
+  Linux:    /dev/ttyACM0  ($ screen /dev/ttyACM0 115200)
+  Mac:      /dev/tty.usbmodem* ($ screen /dev/tty.usbmodem 115200)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TROUBLESHOOTING:
+
+Q: Device not detected?
+A: • Connect different USB port
+  • Check cable (not power-only)
+  • Install drivers: https://infocenter.nordicsemi.com/topic/ug_nc_programmer/UG/nrf_connect_programmer/drivers.html
+  • Reboot computer
+  • Try another USB cable
+
+Q: "Access denied" on Windows?
+A: • Run Command Prompt as Administrator
+  • Restart USB device
+
+Q: "No space left on device"?
+A: • Erase device first: nrfjprog --eraseall
+  • Or use nRF Connect for Desktop → Erase all
+
+Q: Firmware not running after flash?
+A: • Try holding reset button while flashing
+  • Check serial console output (115200 baud)
+  • Verify correct board selected
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DEVICE INFO:
+  Board: nRF52833 Dongle (nrf52833dongle)
+  MCU: nRF52833 (ARM Cortex-M4)
+  Flash: 512 KB
+  RAM: 128 KB
+  Architecture: ARM
+  Zephyr Version: 3.7.99
+
+═══════════════════════════════════════════════════════════════
