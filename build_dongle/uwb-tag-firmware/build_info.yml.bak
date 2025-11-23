@@ -1,0 +1,52 @@
+cmake:
+  application:
+    configuration-dir: C:/Users/posei/uwb-tag-firmware
+    source-dir: C:/Users/posei/uwb-tag-firmware
+  board:
+    name: nrf52833dongle
+    qualifiers: nrf52833
+    revision: 
+  devicetree:
+    bindings-dirs:
+     - C:/Users/posei/uwb-tag-firmware/dts/bindings
+     - C:/ncs/v2.7.0/nrf/dts/bindings
+     - C:/ncs/v2.7.0/zephyr/dts/bindings
+    files:
+     - C:/ncs/v2.7.0/nrf/boards/nordic/nrf52833dongle/nrf52833dongle_nrf52833.dts
+     - C:/Users/posei/uwb-tag-firmware/boards/nrf52833dongle.overlay
+    include-dirs:
+     - C:/Users/posei/uwb-tag-firmware/dts
+     - C:/ncs/v2.7.0/nrf/include
+     - C:/ncs/v2.7.0/nrf/dts
+     - C:/ncs/v2.7.0/zephyr/include
+     - C:/ncs/v2.7.0/zephyr/include/zephyr
+     - C:/ncs/v2.7.0/zephyr/dts/common
+     - C:/ncs/v2.7.0/zephyr/dts/x86
+     - C:/ncs/v2.7.0/zephyr/dts/xtensa
+     - C:/ncs/v2.7.0/zephyr/dts/sparc
+     - C:/ncs/v2.7.0/zephyr/dts/riscv
+     - C:/ncs/v2.7.0/zephyr/dts/posix
+     - C:/ncs/v2.7.0/zephyr/dts/nios2
+     - C:/ncs/v2.7.0/zephyr/dts/arm64
+     - C:/ncs/v2.7.0/zephyr/dts/arm
+     - C:/ncs/v2.7.0/zephyr/dts/arc
+     - C:/ncs/v2.7.0/zephyr/dts
+    user-files:
+     - C:/Users/posei/uwb-tag-firmware/boards/nrf52833dongle.overlay
+  kconfig:
+    files:
+     - C:/ncs/v2.7.0/nrf/boards/nordic/nrf52833dongle/nrf52833dongle_nrf52833_defconfig
+     - C:/Users/posei/uwb-tag-firmware/prj.conf
+     - C:/Users/posei/uwb-tag-firmware/build_dongle/uwb-tag-firmware/zephyr/.config.sysbuild
+    user-files:
+     - C:/Users/posei/uwb-tag-firmware/prj.conf
+  toolchain:
+    name: zephyr
+    path: C:/ncs/toolchains/2d382dcd92/opt/zephyr-sdk
+  vendor-specific:
+    nordic:
+      svdfile: C:/ncs/v2.7.0/modules/hal/nordic/nrfx/mdk/nrf52833.svd
+  zephyr:
+    version: 3.7.99
+    zephyr-base: C:/ncs/v2.7.0/zephyr
+version: 0.1.0

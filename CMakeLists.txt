@@ -11,4 +11,5 @@ project(UWB_TAG_FIRMWARE)
 target_sources(app PRIVATE 
     src/main.c
     src/uwb_driver.c
+    src/pin_test.c
 )

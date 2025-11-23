@@ -1,0 +1,27 @@
+# Copyright (c) 2024 UWB TAG FIRMWARE Project
+# SPDX-License-Identifier: Apache-2.0
+
+description: Decawave DW3110 UWB Transceiver
+
+compatible: "qorvo,dw3110"
+
+include: spi-device.yaml
+
+properties:
+  irq-gpios:
+    type: phandle-array
+    required: false
+    description: |
+      IRQ pin from DW3110 to host MCU (P0.11) - Optional for polling mode
+      
+  reset-gpios:
+    type: phandle-array
+    required: false
+    description: |
+      RESET/RSTN pin to DW3110 (P0.29 - Active Low) - Optional
+      
+  wakeup-gpios:
+    type: phandle-array
+    required: false
+    description: |
+      WAKEUP pin to DW3110 (conflicts with NFC) - Optional

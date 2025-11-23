@@ -1,0 +1,59 @@
+*** Booting nRF Connect SDK v2.8.0-a2386bfc8401 ***
+*** Using Zephyr OS v3.7.99-0bc3393fb112 ***
+
+
+
+*** BOOT START ***
+===========================================
+UWB TAG FIRMWARE - TX MODE (TRANSMITTER)
+===========================================
+Platform: NRF52833
+Transceiver: Decawave DW3110
+RTOS: Zephyr
+===========================================
+
+Running hardware diagnostic...
+
+=== PIN DIAGNOSTIC TEST ===
+Testing hardware connections...
+
+CLK (P0.31)    : Pull-UP=0, Pull-DOWN=0 [STUCK LOW or SHORT!]
+MOSI (P0.30)   : Pull-UP=0, Pull-DOWN=0 [STUCK LOW or SHORT!]
+MISO (P0.28)   : Pull-UP=0, Pull-DOWN=0 [STUCK LOW or SHORT!]
+CS (P0.02)     : Pull-UP=1, Pull-DOWN=1 [STUCK HIGH!]
+RESET (P0.29)  : Pull-UP=1, Pull-DOWN=0 [FLOATING - OK]
+IRQ (P0.11)    : Pull-UP=0, Pull-DOWN=0 [STUCK LOW or SHORT!]
+
+=== END PIN TEST ===
+
+About to call uwb_driver_init...
+I: === DW3000 UWB Driver Init ===
+I: SPI bus ready
+SPI wakeup sequence...
+IRQ GPIO not defined
+=== CHECKPOINT A ===
+Reading Device ID (no sleep)...
+
+=== DW3000 Device ID Read Attempt ===
+TEST: Sending dummy transaction...
+TEST: Result=0, RX=[0x00 0x00]
+
+Attempt 1: Reading Device ID...
+  SPI ret=0, RX=[0x00 0x00 0x00 0x00 0x00]
+
+Attempt 2: Reading Device ID...
+  SPI ret=0, RX=[0x00 0x00 0x00 0x00 0x00]
+
+Attempt 3: Reading Device ID...
+  SPI ret=0, RX=[0x00 0x00 0x00 0x00 0x00]
+
+!!! All attempts failed - MISO stuck at 0x00 !!!
+Hardware checklist:
+  1. Is DW3110 powered? (VDD = 3.3V)
+  2. Is RESET pin connected correctly? (P0.29, Active LOW)
+  3. Are SPI pins correct? CLK=P0.31, MOSI=P0.30, MISO=P0.28, CS=P0.02
+  4. Is chip in deep sleep mode?
+Device ID: 0x00000000
+E: SPI communication failed - MISO reads all 0s
+E: Check: Chip power, reset pin, SPI clock
+Init failed: -5

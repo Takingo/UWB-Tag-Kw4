@@ -1,0 +1,7 @@
+device nrf52833
+si swd
+speed 4000
+loadfile C:\Users\posei\uwb-tag-firmware\build\merged.hex
+r
+g
+exit

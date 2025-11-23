@@ -1,11 +1,17 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/drivers/gpio.h>
+#include "pin_test.h"
 
 LOG_MODULE_REGISTER(uwb_tag_firmware, CONFIG_LOG_DEFAULT_LEVEL);
 
 /* Forward declaration of UWB driver functions */
 extern int uwb_driver_init(void);
 extern int uwb_send_blink(void);
+
+/* LED for visual debug */
+#define LED0_NODE DT_ALIAS(led0)
+static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
 
 /**
  * Main application entry point
@@ -20,38 +26,61 @@ int main(void)
 {
     int ret = 0;
 
-    LOG_INF("===========================================");
-    LOG_INF("UWB TAG FIRMWARE - TX MODE (TRANSMITTER)");
-    LOG_INF("===========================================");
-    LOG_INF("Platform: NRF52833");
-    LOG_INF("Transceiver: Qorvo DW3210");
-    LOG_INF("RTOS: Zephyr");
-    LOG_INF("===========================================");
+    /* Setup LED for visual feedback */
+    if (gpio_is_ready_dt(&led)) {
+        gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE);
+        gpio_pin_set_dt(&led, 1); /* Turn on - we're alive! */
+    }
+
+    /* Force RTT init */
+    printk("\n\n\n*** BOOT START ***\n");
+    
+    printk("===========================================\n");
+    printk("UWB TAG FIRMWARE - TX MODE (TRANSMITTER)\n");
+    printk("===========================================\n");
+    printk("Platform: NRF52833\n");
+    printk("Transceiver: Decawave DW3110\n");
+    printk("RTOS: Zephyr\n");
+    printk("===========================================\n");
+
+    /* Run pin diagnostic test BEFORE UWB init */
+    printk("\nRunning hardware diagnostic...\n");
+    pin_diagnostic_test();
+
+    /* Blink LED to show we got here */
+    for (int i = 0; i < 3; i++) {
+        if (gpio_is_ready_dt(&led)) {
+            gpio_pin_set_dt(&led, 0);
+            k_busy_wait(100000); /* 100ms */
+            gpio_pin_set_dt(&led, 1);
+            k_busy_wait(100000);
+        }
+    }
+
+    printk("About to call uwb_driver_init...\n");
 
     /* Initialize UWB driver and DW3210 transceiver */
     ret = uwb_driver_init();
     if (ret) {
-        LOG_ERR("Failed to initialize UWB driver: %d", ret);
-        return ret;
+        printk("Init failed: %d\n", ret);
+        /* Rapid blink on error */
+        while (1) {
+            if (gpio_is_ready_dt(&led)) {
+                gpio_pin_toggle_dt(&led);
+                k_busy_wait(50000); /* 50ms rapid blink */
+            }
+        }
     }
 
-    LOG_INF("UWB Driver initialized successfully");
-    LOG_INF("Entering TX transmission loop...");
-    LOG_INF("Transmission interval: 500ms");
-    k_msleep(500);
-
-    /* Main TX loop - Send BLINK frame every 500ms */
+    printk("=== INIT COMPLETE ===\n");
+    printk("Entering busy wait loop (no sleep)\n");
+    
+    /* Slow blink = success */
     while (1) {
-        /* Send UWB BLINK frame (TX operation) */
-        ret = uwb_send_blink();
-        if (ret) {
-            LOG_ERR("Failed to send BLINK frame: %d", ret);
+        if (gpio_is_ready_dt(&led)) {
+            gpio_pin_toggle_dt(&led);
         }
-
-        /* Sleep for 490ms to achieve 500ms transmission interval */
-        /* (100ms transmission time + 490ms sleep = 500ms cycle) */
-        LOG_DBG("Entering sleep mode for 490ms...");
-        k_msleep(490);
+        k_busy_wait(500000); /* 500ms slow blink = success */
     }
 
     return 0;

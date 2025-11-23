@@ -1,0 +1,2 @@
+# Load Sysbuild board Kconfig descriptions.
+osource "C:/ncs/v2.7.0/nrf/boards/nordic/nrf52833dongle/Kconfig.sysbuild"

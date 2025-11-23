@@ -1,0 +1,6 @@
+device nrf52833
+si swd
+speed 4000
+r
+g
+exit

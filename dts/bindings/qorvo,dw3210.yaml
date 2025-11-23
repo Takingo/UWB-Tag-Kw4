@@ -1,0 +1,13 @@
+description: Qorvo DW3210 UWB Transceiver
+
+compatible: "qorvo,dw3210"
+
+include: spi-device.yaml
+
+properties:
+  irq-gpios:
+    type: phandle-array
+    required: true
+  reset-gpios:
+    type: phandle-array
+    required: true

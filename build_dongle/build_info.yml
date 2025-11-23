@@ -1,0 +1,19 @@
+cmake:
+  application:
+    source-dir: C:/ncs/v2.7.0/zephyr/share/sysbuild
+  board:
+    name: nrf52833dongle
+    qualifiers: nrf52833
+    revision: 
+  kconfig:
+    files:
+     - C:/Users/posei/uwb-tag-firmware/build_dongle/_sysbuild/empty.conf
+     - C:/Users/posei/uwb-tag-firmware/build_dongle/_sysbuild/empty.conf
+    user-files:
+     - C:/Users/posei/uwb-tag-firmware/build_dongle/_sysbuild/empty.conf
+  sysbuild: true
+version: 0.1.0
+west:
+  command: C:\ncs\toolchains\2d382dcd92\opt\bin\Lib\site-packages\west\__main__.py build -b nrf52833dongle -d build_dongle --pristine
+  topdir: C:\ncs\v2.7.0
+  version: 1.2.0

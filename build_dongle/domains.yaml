@@ -1,0 +1,7 @@
+default: uwb-tag-firmware
+build_dir: C:/Users/posei/uwb-tag-firmware/build_dongle
+domains:
+  - name: uwb-tag-firmware
+    build_dir: C:/Users/posei/uwb-tag-firmware/build_dongle/uwb-tag-firmware
+flash_order:
+  - uwb-tag-firmware

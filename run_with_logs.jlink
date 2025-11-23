@@ -1,0 +1,8 @@
+device nrf52833
+si swd
+speed 4000
+connect
+r
+g
+Sleep 30000
+exit
