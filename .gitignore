@@ -43,3 +43,4 @@ zephyr/
 # Temporary files
 *.tmp
 *.log
+dw3000_sdk/
