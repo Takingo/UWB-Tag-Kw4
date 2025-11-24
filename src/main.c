@@ -73,14 +73,31 @@ int main(void)
     }
 
     printk("=== INIT COMPLETE ===\n");
-    printk("Entering busy wait loop (no sleep)\n");
+    printk("=== Starting BLINK TX Mode ===\n");
+    printk("TX Rate: 5 Hz (every 200ms)\n\n");
     
-    /* Slow blink = success */
+    uint32_t tx_count = 0;
+    
+    /* Main loop: Send BLINK frames periodically */
     while (1) {
+        /* Toggle LED to show activity */
         if (gpio_is_ready_dt(&led)) {
             gpio_pin_toggle_dt(&led);
         }
-        k_busy_wait(500000); /* 500ms slow blink = success */
+        
+        /* Send BLINK frame */
+        ret = uwb_send_blink();
+        if (ret == 0) {
+            tx_count++;
+            if (tx_count % 10 == 0) {
+                printk("TX Count: %u\n", tx_count);
+            }
+        } else {
+            printk("TX failed: %d\n", ret);
+        }
+        
+        /* Wait 200ms between transmissions (5 Hz rate) */
+        k_msleep(200);
     }
 
     return 0;
