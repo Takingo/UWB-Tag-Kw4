@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2024 K4W UWB Tag Project
+
+description: Decawave DW3000 series UWB transceiver (DW3110, DW3120, etc.)
+
+compatible: "decawave,dw3000"
+
+include: spi-device.yaml
+
+properties:
+  irq-gpios:
+    type: phandle-array
+    description: |
+      GPIO connected to the DW3000 IRQ (interrupt) pin.
+      This pin is used by the chip to signal events to the host.
+
+  reset-gpios:
+    type: phandle-array
+    description: |
+      GPIO connected to the DW3000 RSTn (reset) pin.
+      This is an active-low reset signal.
+
+  wakeup-gpios:
+    type: phandle-array
+    description: |
+      GPIO connected to the DW3000 WAKEUP pin.
+      Used to wake the chip from deep sleep mode.
+
+  exton-gpios:
+    type: phandle-array
+    description: |
+      GPIO connected to the DW3000 EXTON (external enable) pin.
+      Controls chip power domain enable (active high).

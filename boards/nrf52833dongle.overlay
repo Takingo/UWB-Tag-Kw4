@@ -2,8 +2,10 @@
  * K4W UWB Tag - Device Tree Overlay
  * Based on K4W_DW31X0_52833_SCH V1.1 - VERIFIED FROM RAW SCHEMATIC DATA
  * 
- * Pin Mapping (100% CONFIRMED):
- *   UWB (SPI3): CLK=P0.31, MOSI=P0.30, MISO=P0.28, CS=P0.02 (SPICSN), IRQ=P0.11 (INT2), RESET=P0.29
+ * Pin Mapping (100% CONFIRMED - FINAL CORRECTION):
+ *   UWB (SPI3): CLK=P0.31, MOSI=P0.30, MISO=P0.28, CS=P0.02 (SPICSN - CORRECTED!)
+ *   UWB Control: IRQ=P0.11 (INT2 - CORRECTED!), RESET=P0.29 (RSTN)
+ *   Note: EXTON and WAKEUP pins are NOT connected in this schematic
  *   I2C0: SDA=P0.10, SCL=P0.09 (NFC pins - requires CONFIG_NFCT_PINS_AS_GPIOS=y)
  *   LEDs: LED1=P0.05 (Blue), LED2=P0.20 (Red)
  *   Button: KEY=P0.04
@@ -14,12 +16,10 @@
 	model = "K4W UWB Tag - nRF52833 + DW3110";
 	
 	/* LED Definitions */
+	/* NOTE: P0.05 is used for EXTON (UWB power control), not LED! */
 	leds {
 		compatible = "gpio-leds";
-		led1: led_1 {
-			gpios = <&gpio0 5 GPIO_ACTIVE_LOW>;
-			label = "Blue LED";
-		};
+		/* led1 disabled - P0.05 used for EXTON */
 		led2: led_2 {
 			gpios = <&gpio0 20 GPIO_ACTIVE_LOW>;
 			label = "Red LED";
@@ -41,8 +41,7 @@
 		/delete-property/ led1;
 		/delete-property/ led2;
 		/delete-property/ led3;
-		led0 = &led1;
-		led1 = &led2;
+		led0 = &led2;  /* Only red LED available */
 		sw0 = &button0;
 		uwb-spi = &spi3;
 	};
@@ -109,19 +108,23 @@
 	pinctrl-1 = <&spi3_sleep>;
 	pinctrl-names = "default", "sleep";
 	
-	/* CRITICAL: CS pin is P0.02 - Try ACTIVE HIGH */
-	cs-gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
+	/* CRITICAL: CS pin is P0.02 (SPICSN) - ACTIVE LOW (standard SPI) */
+	cs-gpios = <&gpio0 2 GPIO_ACTIVE_LOW>;
 
 	dw3110: dw3000@0 {
 		compatible = "decawave,dw3000";
 		reg = <0>;
-		/* Removed spi-max-frequency - will be set in driver code */
+		spi-max-frequency = <8000000>;  /* 8MHz max per DW3110 spec */
 		
-		/* Schematic block 11,12: INT2 label -> P0.11 */
-		irq_gpios = <&gpio0 11 GPIO_ACTIVE_HIGH>;
+		/* Schematic: INT2 -> P0.11 (FINAL CORRECTION!) */
+		irq-gpios = <&gpio0 11 GPIO_ACTIVE_HIGH>;
 		
-		/* Schematic block 9,10: RSTN label -> P0.29 (Active LOW) */
-		reset_gpios = <&gpio0 29 GPIO_ACTIVE_LOW>;
+		/* Schematic: RSTN -> P0.29 (Active LOW) */
+		reset-gpios = <&gpio0 29 GPIO_ACTIVE_LOW>;
+		
+		/* CRITICAL: EXTON -> P0.05 controls AP3406 buck converter (U7) EN pin */
+		/* This MUST be HIGH to provide +1V8 core power to DW3110! */
+		exton-gpios = <&gpio0 5 GPIO_ACTIVE_HIGH>;
 	};
 };
 
