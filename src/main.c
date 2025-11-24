@@ -26,10 +26,10 @@ int main(void)
 {
     int ret = 0;
 
-    /* Setup LED for visual feedback */
+    /* Setup LED for visual feedback - start OFF */
     if (gpio_is_ready_dt(&led)) {
-        gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE);
-        gpio_pin_set_dt(&led, 1); /* Turn on - we're alive! */
+        gpio_pin_configure_dt(&led, GPIO_OUTPUT_INACTIVE);
+        gpio_pin_set_dt(&led, 1); /* ACTIVE_LOW: 1=OFF, 0=ON */
     }
 
     /* Force RTT init */
@@ -47,13 +47,13 @@ int main(void)
     printk("\nRunning hardware diagnostic...\n");
     pin_diagnostic_test();
 
-    /* Blink LED to show we got here */
+    /* Blink LED 3x to show startup */
     for (int i = 0; i < 3; i++) {
         if (gpio_is_ready_dt(&led)) {
-            gpio_pin_set_dt(&led, 0);
-            k_busy_wait(100000); /* 100ms */
-            gpio_pin_set_dt(&led, 1);
-            k_busy_wait(100000);
+            gpio_pin_set_dt(&led, 0); /* ACTIVE_LOW: 0=ON */
+            k_busy_wait(100000); /* 100ms ON */
+            gpio_pin_set_dt(&led, 1); /* ACTIVE_LOW: 1=OFF */
+            k_busy_wait(100000); /* 100ms OFF */
         }
     }
 
@@ -63,11 +63,11 @@ int main(void)
     ret = uwb_driver_init();
     if (ret) {
         printk("Init failed: %d\n", ret);
-        /* Rapid blink on error */
+        /* Fast blink on error */
         while (1) {
             if (gpio_is_ready_dt(&led)) {
                 gpio_pin_toggle_dt(&led);
-                k_busy_wait(50000); /* 50ms rapid blink */
+                k_busy_wait(100000); /* 100ms fast blink */
             }
         }
     }
@@ -80,9 +80,9 @@ int main(void)
     
     /* Main loop: Send BLINK frames periodically */
     while (1) {
-        /* Toggle LED to show activity */
+        /* LED ON just before TX (ACTIVE_LOW: 0=ON) */
         if (gpio_is_ready_dt(&led)) {
-            gpio_pin_toggle_dt(&led);
+            gpio_pin_set_dt(&led, 0);
         }
         
         /* Send BLINK frame */
@@ -96,8 +96,16 @@ int main(void)
             printk("TX failed: %d\n", ret);
         }
         
-        /* Wait 200ms between transmissions (5 Hz rate) */
-        k_msleep(200);
+        /* Keep LED ON for 50ms to make it visible */
+        k_msleep(50);
+        
+        /* LED OFF (ACTIVE_LOW: 1=OFF) */
+        if (gpio_is_ready_dt(&led)) {
+            gpio_pin_set_dt(&led, 1);
+        }
+        
+        /* Wait 150ms more (total 200ms between TX = 5 Hz rate) */
+        k_msleep(150);
     }
 
     return 0;

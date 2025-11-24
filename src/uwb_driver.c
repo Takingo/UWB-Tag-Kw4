@@ -351,8 +351,46 @@ static int dw3000_write_reg(uint8_t reg_addr, const uint8_t *data, uint16_t len)
 #endif
 
 /**
- * Send UWB BLINK frame
- * Simple TX test - sends a basic frame to verify TX functionality
+ * Write data to DW3110 register
+ */
+static int dw3000_write_register(uint16_t reg_addr, const uint8_t *data, uint16_t len)
+{
+    uint8_t header[3];
+    int header_len = 1;
+    
+    // Build SPI header
+    if (reg_addr <= 0x7F) {
+        header[0] = 0x80 | reg_addr;  // Write bit + address
+    } else {
+        header[0] = 0xC0 | (reg_addr & 0x7F);       // Extended write
+        header[1] = (reg_addr >> 7) & 0xFF;
+        header[2] = (reg_addr >> 15) & 0xFF;
+        header_len = 3;
+    }
+    
+    const struct spi_buf tx_bufs[] = {
+        {.buf = header, .len = header_len},
+        {.buf = (uint8_t *)data, .len = len}
+    };
+    const struct spi_buf_set tx = {tx_bufs, 2};
+    
+#if HAS_CS_GPIO
+    gpio_pin_set_dt(&dw3000_cs, 1);  // CS ACTIVE
+    k_busy_wait(1);
+#endif
+    
+    int ret = spi_write(spi_dev, &dw3000_spi_cfg, &tx);
+    
+#if HAS_CS_GPIO
+    k_busy_wait(1);
+    gpio_pin_set_dt(&dw3000_cs, 0);  // CS INACTIVE
+#endif
+    
+    return ret;
+}
+
+/**
+ * Send UWB BLINK frame with REAL radio transmission
  * @return 0 on success, negative error code on failure
  */
 int uwb_send_blink(void)
@@ -360,7 +398,6 @@ int uwb_send_blink(void)
     LOG_INF("=== UWB BLINK TX ===");
     
     // Simple BLINK frame (minimal IEEE 802.15.4 frame)
-    // Frame Control (2) + Sequence (1) + PAN ID (2) + Dest Addr (8) = 13 bytes minimum
     static uint8_t blink_frame[] = {
         0x41, 0x88,              // Frame Control: Data frame, no ACK, PAN ID compression
         0x00,                    // Sequence number (will increment)
@@ -373,20 +410,47 @@ int uwb_send_blink(void)
     static uint8_t seq_num = 0;
     blink_frame[2] = seq_num++;
     
-    // For now, just verify SPI is working by writing to a test register
-    // Full TX implementation requires configuring TX buffer, frame control, etc.
-    // This is a placeholder to demonstrate the concept
+    uint16_t frame_len = sizeof(blink_frame);
     
-    LOG_INF("TX Frame: Seq=%d, Len=%d bytes", blink_frame[2], sizeof(blink_frame));
-    LOG_HEXDUMP_INF(blink_frame, sizeof(blink_frame), "Frame data:");
+    LOG_INF("TX Frame: Seq=%d, Len=%d bytes", blink_frame[2], frame_len);
+    LOG_HEXDUMP_INF(blink_frame, frame_len, "Frame data:");
     
-    // TODO: Actual TX implementation requires:
     // 1. Write frame to TX buffer (register 0x14)
-    // 2. Set TX frame control (register 0x08)
-    // 3. Trigger TX with START_TX command
-    // 4. Wait for TX complete interrupt
+    int ret = dw3000_write_register(0x14, blink_frame, frame_len);
+    if (ret != 0) {
+        LOG_ERR("Failed to write TX buffer: %d", ret);
+        return ret;
+    }
     
-    LOG_INF("TX initiated (simplified - actual radio TX not yet implemented)");
+    // 2. Set TX frame control (register 0x24: TX_FCTRL)
+    uint8_t tx_fctrl[4];
+    tx_fctrl[0] = frame_len & 0xFF;           // Frame length low byte
+    tx_fctrl[1] = (frame_len >> 8) & 0x03;    // Frame length high bits
+    tx_fctrl[2] = 0x00;                        // Reserved
+    tx_fctrl[3] = 0x00;                        // Reserved
+    
+    ret = dw3000_write_register(0x24, tx_fctrl, 4);
+    if (ret != 0) {
+        LOG_ERR("Failed to write TX_FCTRL: %d", ret);
+        return ret;
+    }
+    
+    // 3. Trigger TX (register 0x0D: SYS_CTRL, bit 1 = TXSTRT)
+    uint8_t sys_ctrl = 0x02;  // TXSTRT bit
+    ret = dw3000_write_register(0x0D, &sys_ctrl, 1);
+    if (ret != 0) {
+        LOG_ERR("Failed to start TX: %d", ret);
+        return ret;
+    }
+    
+    LOG_INF(">>> RADIO TX INITIATED <<<");
+    
+    // 4. Wait for TX complete (simple delay for now, should use IRQ)
+    k_msleep(2);
+    
+    // 5. Clear TX status (register 0x44: SYS_STATUS)
+    uint8_t status_clear[4] = {0xFF, 0xFF, 0xFF, 0xFF};
+    dw3000_write_register(0x44, status_clear, 4);
     
     return 0;
 }
