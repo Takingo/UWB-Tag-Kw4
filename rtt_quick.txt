@@ -1,5 +1,9 @@
 *** Booting nRF Connect SDK v2.8.0-a2386bfc8401 ***
 *** Using Zephyr OS v3.7.99-0bc3393fb112 ***
+P0.05 (Front LED) initialized - Will blink every 5 TX (1 sec)
+P0.20 (Back LED) initialized - Button controlled
+Button (P0.04) initialized - Press and release to blink P0.20 LED
+Button current state: 0 (0=pressed, 1=released)
 
 
 
@@ -50,7 +54,7 @@ SPI Config Check:
   Bus device: spi@4002f000
   Frequency: 1000000 Hz
   Operation: 0x00000106
-  CS GPIO: Port=0x6d68, Pin=2 (MANUAL CONTROL)
+  CS GPIO: Port=0x6f7c, Pin=2 (MANUAL CONTROL)
 
 Attempt 1: Reading Device ID...
   SPI ret=0, RX=[0x00 0x00 0x02 0x03 0xCA]
@@ -60,10 +64,14 @@ Attempt 1: Reading Device ID...
     v3 (BE, byte 1-4): 0x000203CA
 Device ID: 0xCA030200
 W: Unexpected Device ID - continuing anyway
+I: Configuring DW3110 for Channel 5 TX mode...
+I: Channel 5 configured
 I: DW3000 Driver initialized successfully
 === INIT COMPLETE ===
 === Starting BLINK TX Mode ===
 TX Rate: 5 Hz (every 200ms)
+Front LED (P0.05): Blinks every 5 TX (1 sec) for power saving
+Back LED (P0.20): OFF (not used)
 
 I: === UWB BLINK TX ===
 I: TX Frame: Seq=0, Len=15 bytes
@@ -122,95 +130,3 @@ I: >>> RADIO TX INITIATED <<<
 I: === UWB BLINK TX ===
 I: TX Frame: Seq=9, Len=15 bytes
 I: Frame data:
-I: 41 88 09 ff ff 01 02 03 |A.......
-I: 04 05 06 07 08 aa bb    |....... 
-I: >>> RADIO TX INITIATED <<<
-TX Count: 10
-I: === UWB BLINK TX ===
-I: TX Frame: Seq=10, Len=15 bytes
-I: Frame data:
-I: 41 88 0a ff ff 01 02 03 |A.......
-I: 04 05 06 07 08 aa bb    |....... 
-I: >>> RADIO TX INITIATED <<<
-I: === UWB BLINK TX ===
-I: TX Frame: Seq=11, Len=15 bytes
-I: Frame data:
-I: 41 88 0b ff ff 01 02 I: === UWB BLINK TX ===
-I: TX Frame: Seq=34, Len=15 bytes
-I: Frame data:
-I: 41 88 22 ff ff 01 02 03 |A.".....
-I: 04 05 06 07 08 aa bb    |....... 
-I: >>> RADIO TX INITIATED <<<
-I: === UWB BLINK TX ===
-I: TX Frame: Seq=35, Len=15 bytes
-I: Frame data:
-I: 41 88 23 ff ff 01 02 03 |A.#.....
-I: 04 05 06 07 08 aa bb    |....... 
-I: >>> RADIO TX INITIATED <<<
-I: === UWB BLINK TX ===
-I: TX Frame: Seq=36, Len=15 bytes
-I: Frame data:
-I: 41 88 24 ff ff 01 02 03 |A.$.....
-I: 04 05 06 07 08 aa bb    |....... 
-I: >>> RADIO TX INITIATED <<<
-I: === UWB BLINK TX ===
-I: TX Frame: Seq=37, Len=15 bytes
-I: Frame data:
-I: 41 88 25 ff ff 01 02 03 |A.%.....
-I: 04 05 06 07 08 aa bb    |....... 
-I: >>> RADIO TX INITIATED <<<
-I: === UWB BLINK TX ===
-I: TX Frame: Seq=38, Len=15 bytes
-I: Frame data:
-I: 41 88 26 ff ff 01 02 03 |A.&.....
-I: 04 05 06 07 08 aa bb    |....... 
-I: >>> RADIO TX INITIATED <<<
-I: === UWB BLINK TX ===
-I: TX Frame: Seq=39, Len=15 bytes
-I: Frame data:
-I: 41 88 27 ff ff 01 02 03 |A.'.....
-I: 04 05 06 07 08 aa bb    |....... 
-I: >>> RADIO TX INITIATED <<<
-TX Count: 40
-I: === UWB BLINK TX ===
-I: TX Frame: Seq=40, Len=15 bytes
-I: Frame data:
-I: 41 88 28 ff ff 01 02 03 |A.(.....
-I: 04 05 06 07 08 aa bb    |....... 
-I: >>> RADIO TX INITIATED <<<
-I: === UWB BLINK TX ===
-I: TX Frame: Seq=41, Len=15 bytes
-I: Frame data:
-I: 41 88 29 ff ff 01 02 03 |A.).....
-I: 04 05 06 07 08 aa bb    |....... 
-I: >>> RADIO TX INITIATED <<<
-I: === UWB BLINK TX ===
-I: TX Frame: Seq=42, Len=15 bytes
-I: Frame data:
-I: 41 88 2a ff ff 01 02 03 |A.*.....
-I: 04 05 06 07 08 aa bb    |....... 
-I: >>> RADIO TX INITIATED <<<
-I: === UWB BLINK TX ===
-I: TX Frame: Seq=43, Len=15 bytes
-I: Frame data:
-I: 41 88 2b ff ff 01 02 03 |A.+.....
-I: 04 05 06 07 08 aa bb    |....... 
-I: >>> RADIO TX INITIATED <<<
-I: === UWB BLINK TX ===
-I: TX Frame: Seq=44, Len=15 bytes
-I: Frame data:
-I: 41 88 2c ff ff 01 02 03 |A.,.....
-I: 04 05 06 07 08 aa bb    |....... 
-I: >>> RADIO TX INITIATED <<<
-I: === UWB BLINK TX ===
-I: TX Frame: Seq=45, Len=15 bytes
-I: Frame data:
-I: 41 88 2d ff ff 01 02 03 |A.-.....
-I: 04 05 06 07 08 aa bb    |....... 
-I: >>> RADIO TX INITIATED <<<
-I: === UWB BLINK TX ===
-I: TX Frame: Seq=46, Len=15 bytes
-I: Frame data:
-I: 41 88 2e ff ff 01 02 03 |A.......
-I: 04 05 06 07 08 aa bb    |....... 
-I: >>> RADIO TX INITIATED <<<

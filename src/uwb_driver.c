@@ -60,6 +60,9 @@ static const struct gpio_dt_spec dw3000_exton = GPIO_DT_SPEC_GET(DW3000_NODE, ex
 #define DW3000_REG_DEV_ID       0x00
 #define DW3000_EXPECTED_DEV_ID  0xDECA0130  // DW3110 Device ID
 
+/* Forward declarations */
+static int dw3000_write_register(uint16_t reg_addr, const uint8_t *data, uint16_t len);
+
 /**
  * DW3110 Power-On and Wake-Up Sequence
  * Per DW3110 datasheet, proper power-on sequence is critical:
@@ -314,6 +317,19 @@ int uwb_driver_init(void)
     if (dev_id != DW3000_EXPECTED_DEV_ID) {
         LOG_WRN("Unexpected Device ID - continuing anyway");
     }
+    
+    LOG_INF("Configuring DW3110 for Channel 5 TX mode...");
+    
+    // Configure Channel 5 (CHAN_CTRL register 0x10014)
+    uint8_t chan_ctrl[4] = {0x05, 0x00, 0x00, 0x00};  // Channel 5
+    ret = dw3000_write_register(0x10014, chan_ctrl, 4);
+    if (ret != 0) {
+        LOG_ERR("Failed to write CHAN_CTRL: %d", ret);
+    } else {
+        LOG_INF("Channel 5 configured");
+    }
+    
+    k_msleep(10);
     
     LOG_INF("DW3000 Driver initialized successfully");
     return 0;
