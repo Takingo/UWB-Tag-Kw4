@@ -43,3 +43,17 @@ zephyr/
 # Temporary files
 *.tmp
 *.log
+rtt_output.log
+flash_cmd.jlink
+*.code-workspace
+
+# Test files
+src/main_pin_test.c
+
+# Board configurations (if auto-generated)
+boards/Kconfig.board
+boards/Kconfig.defconfig
+boards/*.cmake
+boards/*.yaml
+boards/*.overlay
+boards/*_defconfig
